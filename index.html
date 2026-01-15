@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You</title>
+
+<style>
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:#000;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* PASSWORD */
+#lock{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+#lock input{
+  padding:12px;
+  border-radius:25px;
+  border:none;
+  width:220px;
+  text-align:center;
+}
+#lock button{
+  margin-top:12px;
+  padding:12px 30px;
+  border:none;
+  border-radius:25px;
+  background:#ff4d88;
+  color:#fff;
+  font-size:15px;
+}
+#error{color:#ff8080;margin-top:8px}
+
+/* SCREENS */
+.screen{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+button{
+  padding:14px 30px;
+  border:none;
+  border-radius:30px;
+  background:#ff4d88;
+  color:#fff;
+  font-size:16px;
+}
+
+/* BALLOONS */
+.balloon{
+  position:fixed;
+  bottom:-20%;
+  animation:floatUp linear infinite;
+  pointer-events:none;
+}
+@keyframes floatUp{
+  to{transform:translateY(-140vh)}
+}
+
+/* CAKE */
+#cake{font-size:110px;margin:12px}
+#countdown{font-size:18px;margin-bottom:10px}
+
+/* STORY LAYOUT */
+#story{
+  display:none;
+  min-height:100vh;
+  background:#FFF0F5;
+  padding:40px 20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+}
+
+.story-split{
+  display:flex;
+  flex-direction:row;
+  gap:20px;
+  width:100%;
+  max-width:900px;
+  margin:auto;
+}
+
+.story-image-container{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:10px;
+}
+.story-image{
+  width:100%;
+  height:auto;
+  border-radius:16px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.story-text{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.story-inner p{
+  font-size:17px;
+  line-height:1.7;
+  margin-bottom:18px;
+  opacity:0;
+  transition:opacity 1s;
+}
+
+/* SCROLL NOTE */
+#scrollNote{
+  margin-top:30px;
+  text-align:center;
+  opacity:0;
+  transition:opacity 1s;
+}
+
+/* PHOTOS BOTTOM */
+.photos{
+  margin-top:50px;
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.photos img{
+  width:45%;
+  border-radius:16px;
+  border:4px solid #ffb6c1; /* cute outline */
+  box-shadow:0 10px 25px rgba(0,0,0,0.35);
+  opacity:0;
+  transition:opacity 1s;
+}
+
+/* ASSURANCE */
+.assurance{
+  margin-top:30px;
+  background:#FFE4E1;
+  color:#4a2b36;
+  padding:20px;
+  border-radius:16px;
+  font-size:16px;
+  line-height:1.7;
+  text-align:center;
+  opacity:0;
+  transition:opacity 1s;
+}
+
+/* MOBILE ADJUSTMENTS */
+@media(max-width:700px){
+  .story-split{
+    flex-direction:column;
+  }
+  .story-image-container, .story-text{
+    width:100%;
+  }
+  .photos img{
+    width:90%;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD -->
+<div id="lock">
+  <h3>Just for you</h3>
+  <input type="password" id="pass" placeholder="Password">
+  <button onclick="unlock()">Enter</button>
+  <div id="error"></div>
+</div>
+
+<div id="app" style="display:none">
+
+<!-- STEP 1 -->
+<div id="step1" class="screen">
+  <button onclick="lightsOn()">💡 Lights On</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" class="screen" style="display:none">
+  <button onclick="decorate()">🎉 Decorate</button>
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" class="screen" style="display:none">
+  <div id="countdown">Loading...</div>
+  <div id="cake">🎂</div>
+  <button id="blowBtn" onclick="blow()" disabled>💨 Blow</button>
+</div>
+
+<!-- STORY -->
+<div id="story">
+  <div class="story-split">
+    <div class="story-image-container">
+      <img src="img1.jpg" class="story-image">
+    </div>
+    <div class="story-text story-inner" id="storyText"></div>
+  </div>
+
+  <div id="scrollNote">⬇️ scroll down ⬇️</div>
+
+  <div class="photos">
+    <img src="img2.jpg">
+    <img src="img3.jpg">
+  </div>
+
+  <div class="assurance">
+    meri jaan you have no idea how best you are  
+    i know im cringy or weird but im trying to be better for you,  
+    for our future so no one points out at you  
+    i want u be happiest everyday  
+    always stay happy and khuda tumhari hifazat karein  
+    <br><strong>ameen summa ameen 💗</strong>
+  </div>
+</div>
+
+</div>
+
+<script>
+const PASSWORD="Jaanji";
+
+function unlock(){
+  if(pass.value===PASSWORD){
+    lock.style.display="none";
+    app.style.display="block";
+  } else error.innerText="Wrong password";
+}
+
+function lightsOn(){
+  document.body.style.background="#FFF0F5";
+  document.body.style.color="#222";
+  step1.style.display="none";
+  step2.style.display="flex";
+}
+
+function decorate(){
+  step2.style.display="none";
+  step3.style.display="flex";
+
+  for(let i=0;i<30;i++){
+    let b=document.createElement("div");
+    b.className="balloon";
+    b.innerText=Math.random()>0.5?"🎈":"💖";
+    b.style.left=Math.random()*100+"%";
+    b.style.fontSize=22+Math.random()*28+"px";
+    b.style.animationDuration=3+Math.random()*3+"s";
+    document.body.appendChild(b);
+  }
+
+  startCountdown();
+}
+
+// Countdown to 12 AM
+function startCountdown(){
+  const countdownEl = document.getElementById("countdown");
+  const blowBtn = document.getElementById("blowBtn");
+
+  const interval = setInterval(()=>{
+    const now = new Date();
+    const midnight = new Date();
+    midnight.setHours(24,0,0,0); // next 12 AM
+    const diff = midnight - now;
+
+    if(diff <=0){
+      clearInterval(interval);
+      countdownEl.innerText="Make a wish ✨";
+      blowBtn.disabled=false;
+      return;
+    }
+
+    const h = Math.floor(diff/1000/60/60);
+    const m = Math.floor(diff/1000/60)%60;
+    const s = Math.floor(diff/1000)%60;
+
+    countdownEl.innerText=`${h}h ${m}m ${s}s`;
+  },1000);
+}
+
+function blow(){
+  step3.style.display="none";
+  story.style.display="flex";
+  showStory();
+}
+
+const paragraphs=[
+"I still remember how you slowly became a part of my days, Manha.",
+"There wasn’t a big moment, no dramatic start — just small conversations that started to matter.",
+"Talking to you became a habit. Waiting for your replies felt normal. And smiling after reading them… I didn’t even notice when that started.",
+"I noticed your little habits — the way you react, the way you go silent sometimes, the way you act strong even when you’re tired.",
+"I’ll be honest… yes, I stalked you. Not out of obsession — but because I cared.",
+"I put effort in my own quiet way. I waited, I understood, I respected your space — even when it wasn’t easy for me.",
+"No matter what happens, these feelings were real.",
+"💗 Happy Birthday, Manha 💗"
+];
+
+function showStory(){
+  const storyText = document.getElementById("storyText");
+  const scrollNote = document.getElementById("scrollNote");
+  const photos = document.querySelectorAll(".photos img");
+  const assurance = document.querySelector(".assurance");
+
+  paragraphs.forEach((text,i)=>{
+    setTimeout(()=>{
+      let p = document.createElement("p");
+      p.innerText=text;
+      storyText.appendChild(p);
+      requestAnimationFrame(()=>p.style.opacity=1);
+
+      if(i===paragraphs.length-1){
+        setTimeout(()=>{
+          scrollNote.style.opacity=1;
+
+          photos.forEach((img,j)=>{
+            setTimeout(()=>{
+              img.style.opacity=1;
+            }, j*1200);
+          });
+
+          setTimeout(()=>{
+            assurance.style.opacity=1;
+          }, photos.length*1200);
+
+        },1300);
+      }
+    }, i*1300);
+  });
+}
+</script>
+
+</body>
+</html>
